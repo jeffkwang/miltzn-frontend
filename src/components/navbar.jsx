@@ -25,21 +25,21 @@ const navigation = {
       featured: [
         {
           name: 'Tufted Goods',
-          href: '#',
-          imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-03-category-01.jpg',
+          href: '/products',
+          imageSrc: 'https://images.unsplash.com/photo-1527368746281-798b65e1ac6e?q=80&w=1975&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
           imageAlt:
-            'Wooden shelf with gray and olive drab green baseball caps, next to wooden clothes hanger with sweaters.',
+            'Classic storefront',
         },
         {
           name: 'New Arrivals',
-          href: '#',
-          imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-04-detail-product-shot-01.jpg',
+          href: '/products',
+          imageSrc: 'https://images.unsplash.com/photo-1629949009765-40fc74c9ec21?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
           imageAlt: 'Drawstring top with elastic loop closure and textured interior padding.',
         },
         {
           name: 'Wall Art',
-          href: '#',
-          imageSrc: 'https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-06.jpg',
+          href: '/wallart',
+          imageSrc: 'https://images.unsplash.com/photo-1655573537528-8344db4af1f8?q=80&w=1915&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
           imageAlt:
             'Three shirts in gray, white, and blue arranged on table with same line drawing of hands and shapes overlapping on front of shirt.',
         },
@@ -50,20 +50,19 @@ const navigation = {
             id: 'pillows_cushions',
             name: 'Pillows & Cushions',
             items: [
-              { name: 'Throw Pillows', href: '#' },
-              { name: 'Lumbar Pillows', href: '#' },
-              { name: 'Seat Pads', href: '#' },
-              { name: 'Floor Cushions', href: '#' },
+              { name: 'Pillows', href: '/pillows' },
+              { name: 'Floor Cushions', href: '/seatcushions' },
+              { name: 'Seat Cushions', href: '/seatcushions' },
             ],
           },
           {
             id: 'collection',
             name: 'Shop Collection',
             items: [
-              { name: 'Everything', href: '#' },
-              { name: 'Core', href: '#' },
-              { name: 'New Arrivals', href: '#' },
-              { name: 'Sale', href: '#' },
+              { name: 'Everything', href: '/products' },
+              { name: 'Core', href: '/essential' },
+              { name: 'New Arrivals', href: '/products' },
+              { name: 'Sale', href: '/sale' },
             ],
           },
         ],
@@ -72,8 +71,8 @@ const navigation = {
             id: 'decor',
             name: 'Decor',
             items: [
-              { name: 'Wall Art', href: '#' },
-              { name: 'Rugs', href: '#' }
+              { name: 'Wall Art', href: '/wallart' },
+              { name: 'Rugs', href: '/rugs' }
             ],
           },
         ],
@@ -81,8 +80,8 @@ const navigation = {
     },
   ],
   pages: [
-    { name: 'Company', href: '#' },
-    { name: 'Custom Design', href: '#' },
+    { name: 'Company', href: '/' },
+    { name: 'Custom Design', href: '/' },
   ],
 }
 

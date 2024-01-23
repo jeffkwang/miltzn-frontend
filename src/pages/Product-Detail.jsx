@@ -1,20 +1,5 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-      require('@tailwindcss/typography'),
-      require('@tailwindcss/aspect-ratio'),
-    ],
-  }
-  ```
-*/
-import { Fragment, useState } from 'react'
+import { PRODUCTS_API_URL } from '../api'
+import { Fragment, useState, useEffect } from 'react'
 import { Disclosure, RadioGroup, Tab} from '@headlessui/react'
 import {
   HeartIcon,
@@ -22,54 +7,56 @@ import {
   PlusIcon,
 } from '@heroicons/react/24/outline'
 import { StarIcon } from '@heroicons/react/20/solid'
+import { useParams } from 'react-router-dom';
 
-const product = {
-  name: 'Zip Tote Basket',
-  price: '$140',
-  rating: 4,
-  images: [
-    {
-      id: 1,
-      name: 'Angled view',
-      src: 'https://tailwindui.com/img/ecommerce-images/product-page-03-product-01.jpg',
-      alt: 'Angled front view with bag zipped and handles upright.',
-    },
-    // More images...
-  ],
-  colors: [
-    { name: 'Washed Black', bgColor: 'bg-gray-700', selectedColor: 'ring-gray-700' },
-    { name: 'White', bgColor: 'bg-white', selectedColor: 'ring-gray-400' },
-    { name: 'Washed Gray', bgColor: 'bg-gray-500', selectedColor: 'ring-gray-500' },
-  ],
-  description: `
-    <p>The Zip Tote Basket is the perfect midpoint between shopping tote and comfy backpack. With convertible straps, you can hand carry, should sling, or backpack this convenient and spacious bag. The zip top and durable canvas construction keeps your goods protected for all-day use.</p>
-  `,
-  details: [
-    {
-      name: 'Features',
-      items: [
-        'Multiple strap configurations',
-        'Spacious interior with top zip',
-        'Leather handle and tabs',
-        'Interior dividers',
-        'Stainless strap loops',
-        'Double stitched construction',
-        'Water-resistant',
-      ],
-    },
-    // More sections...
-  ],
-}
+// const product = {
+//   name: 'Zip Tote Basket',
+//   price: '$140',
+//   rating: 4,
+//   images: [
+//     {
+//       id: 1,
+//       name: 'Angled view',
+//       src: 'https://tailwindui.com/img/ecommerce-images/product-page-03-product-01.jpg',
+//       alt: 'Angled front view with bag zipped and handles upright.',
+//     },
+//     // More images...
+//   ],
+//   colors: [
+//     { name: 'Washed Black', bgColor: 'bg-gray-700', selectedColor: 'ring-gray-700' },
+//     { name: 'White', bgColor: 'bg-white', selectedColor: 'ring-gray-400' },
+//     { name: 'Washed Gray', bgColor: 'bg-gray-500', selectedColor: 'ring-gray-500' },
+//   ],
+//   description: `
+//     <p>The Zip Tote Basket is the perfect midpoint between shopping tote and comfy backpack. With convertible straps, you can hand carry, should sling, or backpack this convenient and spacious bag. The zip top and durable canvas construction keeps your goods protected for all-day use.</p>
+//   `,
+//   details: [
+//     {
+//       name: 'Features',
+//       items: [
+//         'Multiple strap configurations',
+//         'Spacious interior with top zip',
+//         'Leather handle and tabs',
+//         'Interior dividers',
+//         'Stainless strap loops',
+//         'Double stitched construction',
+//         'Water-resistant',
+//       ],
+//     },
+//     // More sections...
+//   ],
+// }
+
 const relatedProducts = [
-  {
-    id: 1,
-    name: 'Zip Tote Basket',
-    color: 'White and black',
-    href: '#',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
-    imageAlt: 'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
-    price: '$140',
-  },
+  //{
+    // id: 1,
+    // name: 'Zip Tote Basket',
+    // color: 'White and black',
+    // href: '#',
+    // imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
+    // imageAlt: 'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
+    // price: '$140',
+  //},
   // More products...
 ]
 
@@ -78,7 +65,58 @@ function classNames(...classes) {
 }
 
 export default function ProductDetails() {
-  const [selectedColor, setSelectedColor] = useState(product.colors[0])
+  const { slug } = useParams(); 
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    fetch(`${PRODUCTS_API_URL}/${slug}`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Format the data as needed for your product detail page
+        const formattedProduct = {
+          name: data.name,
+          price: `$${data.price}`,
+          rating: 4, // You may need to adjust this based on your API response
+          images: [
+            {
+              id: 1,
+              name: 'Angled view',
+              src: data.images, // Use the 'images' field from the API response
+              alt: data.name, // You can set the alt text to the product name or adjust as needed
+            },
+            // More images...
+          ],
+          colors: [
+            {name: data.color, bgColor: 'bg-gray-700', selectedColor: 'ring-gray-700'},
+          ],
+          description: data.description,
+          details: [
+            {
+              name: 'Features',
+              items: [
+                'Multiple strap configurations',
+                'Spacious interior with top zip',
+                'Leather handle and tabs',
+                'Interior dividers',
+                'Stainless strap loops',
+                'Double stitched construction',
+                'Water-resistant',
+              ],
+            },
+          ],
+        };
+        
+        const defaultColor = formattedProduct.colors[0];
+        setSelectedColor(defaultColor);
+
+        setProduct(formattedProduct);
+      });
+  }, [slug]);
+
+  if (!product) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="bg-white">

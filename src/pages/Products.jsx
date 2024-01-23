@@ -1,17 +1,42 @@
-const products = [
-  {
-    id: 1,
-    name: 'Basic Tee',
-    href: '/products/zip-tote-basket',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg',
-    imageAlt: "Front of men's Basic Tee in black.",
-    price: '$35',
-    color: 'Black',
-  },
-  // More products...
-]
+import React, { useState, useEffect } from 'react';
+import { PRODUCTS_API_URL } from '../api'; // Import the API_URL constant
+
+// const products = [
+//   {
+//     id: 1,
+//     name: 'Basic Tee',
+//     href: '/products/zip-tote-basket',
+//     imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg',
+//     imageAlt: "Front of men's Basic Tee in black.",
+//     price: '$35',
+//     color: 'Black',
+//   },
+//   // More products...
+// ]
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    // Fetch data from your Django API endpoint here
+    fetch(PRODUCTS_API_URL)
+      .then((response) => response.json())
+      .then((data) => {
+        // Format the data to match the desired format
+        const formattedProducts = data.map((item) => ({
+          id: item.id,
+          name: item.name,
+          href: `products/${item.slug}`, // You might need to adjust this URL
+          imageSrc: item.images,
+          imageAlt: item.name,
+          price: `$${item.price}`,
+          color: item.color,
+        }));
+        setProducts(formattedProducts);
+      })
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">

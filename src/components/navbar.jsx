@@ -12,10 +12,13 @@
   }
   ```
 */
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Popover, Tab, Transition } from '@headlessui/react'
 import { Bars3Icon, HeartIcon, ShoppingBagIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import logo from '../assets/img/logos/logo.svg';
+import { getCookie, setCookie } from './cookieutils'
+import { incrementQty, decrementQty } from '../components/add-to-cart'
+import { CHECKOUT_API_URL } from '../api';
 
 const navigation = {
   categories: [
@@ -110,8 +113,94 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
+async function initiateCheckout(event) {
+  event.preventDefault();
+  
+  try {
+    let csrftoken = await getCsrfToken();
+    const cart = getCookie('cart');
+
+    // Replace `API_URL` with the actual API URL of your Django backend
+    // const response = await fetch(`${CHECKOUT_API_URL}`, {
+      const response = await fetch(`${CHECKOUT_API_URL}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: cart,
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+
+    // Redirect the user to the checkout URL
+    window.location.href = data.checkout_url;
+  } catch (error) {
+    console.error('Error initiating checkout:', error);
+  }
+}
+
 export default function Navbar() {
   const [open, setOpen] = useState(false)
+  const [products, setProducts] = useState([]);
+  const [cartItemCount, setCartItemCount] = useState(() => {
+    // Parse the cart data from the cookie
+    const cartData = JSON.parse(getCookie('cart')) || [];
+  
+    // Calculate the initial count of items in the cart
+    const initialItemCount = cartData.reduce((total, item) => total + (item.qty || 1), 0);
+  
+    // Return this count to initialize the state
+    return initialItemCount;
+  });
+  let totalItemCount = 0;
+
+  const handleCartUpdate = () => {
+    const cartData = JSON.parse(getCookie('cart')) || [];
+
+    // Reformat the cart data into the desired format
+    const formattedProducts = cartData.map((cartItem) => ({
+      id: cartItem.slug, // You can use 'slug' as the id or generate a unique id if needed
+      name: cartItem.name,
+      href: `/products/${cartItem.slug}`, // You can set the href as needed
+      color: cartItem.color, // You can set the color as needed
+      imageSrc: cartItem.images,
+      imageAlt: cartItem.name,
+      qty: cartItem.qty,
+    }));
+
+    // Update the 'products' state with the reformatted data
+    setProducts(formattedProducts);
+  };
+
+  useEffect(() => {
+    const handleCartChange = () => {
+      const cartData = JSON.parse(getCookie('cart')) || [];
+
+      const newCartItemCount = cartData.reduce((total, item) => total + (item.qty || 1), 0);
+  
+      setCartItemCount(newCartItemCount);
+    };
+  
+    // Set up event listener
+    window.addEventListener('cartChanged', handleCartChange);
+
+    handleCartUpdate();
+
+    // Add event listener
+    window.addEventListener('cartUpdated', handleCartUpdate);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener('cartChanged', handleCartChange);
+    };
+    
+  }, []);
 
   return (
     <div className="bg-white">
@@ -438,7 +527,7 @@ export default function Navbar() {
                     className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                     aria-hidden="true"
                   />
-                  <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">0</span>
+                  <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{cartItemCount}</span>
                   <span className="sr-only">items in cart, view bag</span>
                 </Popover.Button>
                 <Transition
@@ -453,7 +542,7 @@ export default function Navbar() {
                   <Popover.Panel className="absolute inset-x-0 top-16 mt-px bg-white pb-6 shadow-lg sm:px-2 lg:left-auto lg:right-0 lg:top-full lg:-mr-1.5 lg:mt-3 lg:w-80 lg:rounded-lg lg:ring-1 lg:ring-black lg:ring-opacity-5 z-[999]">
                     <h2 className="sr-only">Shopping Cart</h2>
 
-                    <form className="mx-auto max-w-2xl px-4">
+                    <form className="mx-auto max-w-2xl px-4" onSubmit={initiateCheckout}>
                       <ul role="list" className="divide-y divide-gray-200">
                         {products.map((product) => (
                           <li key={product.id} className="flex items-center py-6">
@@ -468,6 +557,21 @@ export default function Navbar() {
                               </h3>
                               <p className="text-gray-500">{product.color}</p>
                             </div>
+                            <div className="flex items-center">
+                              <span 
+                                className="cursor-pointer text-gray-600 hover:text-gray-800" 
+                                onClick={() => decrementQty(product)} 
+                                >
+                                  -
+                              </span>
+                              <p className="mx-2">{product.qty}</p>
+                              <span 
+                                className="cursor-pointer text-gray-600 hover:text-gray-800"
+                                onClick={() => incrementQty(product)} 
+                                >
+                                  +
+                              </span>
+                            </div>
                           </li>
                         ))}
                       </ul>
@@ -475,6 +579,7 @@ export default function Navbar() {
                       <button
                         type="submit"
                         className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                        onClick={ initiateCheckout }
                       >
                         Checkout
                       </button>

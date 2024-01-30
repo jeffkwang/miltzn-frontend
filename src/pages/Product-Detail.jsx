@@ -6,7 +6,7 @@ import {
   MinusIcon,
   PlusIcon,
 } from '@heroicons/react/24/outline'
-import { StarIcon } from '@heroicons/react/20/solid'
+import { handleAddToCart } from '../components/add-to-cart'
 import { useParams } from 'react-router-dom';
 
 // const product = {
@@ -177,7 +177,7 @@ export default function ProductDetails() {
               </div>
 
               {/* Reviews */}
-              <div className="mt-3">
+              {/* <div className="mt-3">
                 <h3 className="sr-only">Reviews</h3>
                 <div className="flex items-center">
                   <div className="flex items-center">
@@ -194,7 +194,7 @@ export default function ProductDetails() {
                   </div>
                   <p className="sr-only">{product.rating} out of 5 stars</p>
                 </div>
-              </div>
+                </div> */}
 
               <div className="mt-6">
                 <h3 className="sr-only">Description</h3>
@@ -244,7 +244,9 @@ export default function ProductDetails() {
 
                 <div className="mt-10 flex">
                   <button
-                    type="submit"
+                    type="button"
+                    id="add-to-bag"
+                    onClick={handleAddToCart(product, slug, selectedColor)}
                     className="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
                   >
                     Add to bag

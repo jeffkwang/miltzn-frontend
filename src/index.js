@@ -15,6 +15,7 @@ root.render(
       <meta name="description" content="Discover a range of tufted goods at Miltzn Home. If there is something you'd like in particular that we don't have, we can make it for you!" />
       {/* Add more default meta tags or links here */}
     </Helmet>
+    
     <App />
   </React.StrictMode>
 );

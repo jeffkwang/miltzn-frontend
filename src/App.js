@@ -7,9 +7,9 @@ import ProductsPage from "./pages/Products"
 import ProductDetails from "./pages/Product-Detail"
 
 function App() {
+
   return (
     <body className="max-w-[1800px] mx-auto">
-      
       <Router>
         
         <Navbar />

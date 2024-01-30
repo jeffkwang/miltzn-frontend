@@ -123,7 +123,6 @@ async function initiateCheckout(event) {
     const response = await fetch(`${CHECKOUT_API_URL}`, {
       // const response = await fetch(`http://127.0.0.1:8000/checkout/`, {
       method: 'POST',
-      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },

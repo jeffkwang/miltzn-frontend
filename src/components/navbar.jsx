@@ -117,12 +117,11 @@ async function initiateCheckout(event) {
   event.preventDefault();
   
   try {
-    let csrftoken = await getCsrfToken();
     const cart = getCookie('cart');
 
     // Replace `API_URL` with the actual API URL of your Django backend
-    // const response = await fetch(`${CHECKOUT_API_URL}`, {
-      const response = await fetch(`${CHECKOUT_API_URL}`, {
+    const response = await fetch(`${CHECKOUT_API_URL}`, {
+      // const response = await fetch(`http://127.0.0.1:8000/checkout/`, {
       method: 'POST',
       credentials: 'include',
       headers: {

@@ -16,11 +16,15 @@ root.render(
       {/* Add more default meta tags or links here */}
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-FNGNDK1TKJ"></script>
       <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-FNGNDK1TKJ');
+        
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+  
+          gtag('config', 'G-FNGNDK1TKJ');
+        `}
+        
       </script>
     </Helmet>
     

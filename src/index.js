@@ -14,6 +14,14 @@ root.render(
       <title>Shop custom tufted goods | Miltzn</title>
       <meta name="description" content="Discover a range of tufted goods at Miltzn Home. If there is something you'd like in particular that we don't have, we can make it for you!" />
       {/* Add more default meta tags or links here */}
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-FNGNDK1TKJ"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-FNGNDK1TKJ');
+      </script>
     </Helmet>
     
     <App />

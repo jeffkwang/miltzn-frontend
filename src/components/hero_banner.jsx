@@ -18,7 +18,7 @@ export default function Hero() {
     queryKey: ['imageUrls'],
     queryFn: fetchImageUrls
   });
-  if (isLoading) return <div>Loading images...</div>;
+  if (isLoading) return <div></div>;
   if (error) return <div>An error occurred: {error.message}</div>;
 
   // Function to group every two URLs for rendering in the grid structure

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { PRODUCTS_API_URL } from '../api'; // Import the API_URL constant
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { PRODUCTS_API_URL, API_URL } from '../api'; // Import the API_URL constant
 
 // const products = [
 //   {
@@ -14,28 +15,37 @@ import { PRODUCTS_API_URL } from '../api'; // Import the API_URL constant
 //   // More products...
 // ]
 
-export default function ProductsPage() {
-  const [products, setProducts] = useState([]);
+const fetchProducts = async ({ queryKey }) => {
+  const [_key, { apiURL }] = queryKey;
+  const response = await fetch(apiURL);
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
 
-  useEffect(() => {
-    // Fetch data from your Django API endpoint here
-    fetch(PRODUCTS_API_URL)
-      .then((response) => response.json())
-      .then((data) => {
-        // Format the data to match the desired format
-        const formattedProducts = data.map((item) => ({
-          id: item.id,
-          name: item.name,
-          href: `products/${item.slug}`, // You might need to adjust this URL
-          imageSrc: item.images,
-          imageAlt: item.name,
-          price: `$${item.price}`,
-          color: item.color,
-        }));
-        setProducts(formattedProducts);
-      })
-      .catch((error) => console.error('Error fetching data:', error));
-  }, []);
+export default function ProductsPage() {
+  const { collection } = useParams(); // Get the collection parameter from the URL
+
+  const apiURL = collection ? `${API_URL}?collection=${collection}` : PRODUCTS_API_URL;
+
+  const { data: products, isLoading, error } = useQuery({
+    queryKey: ['products', { apiURL }],
+    queryFn: fetchProducts,
+    // Optional: Convert the fetched data in the desired format here using select
+    select: (data) => data.map((item) => ({
+      id: item.id,
+      name: item.name,
+      href: `products/${item.slug}`, // You might need to adjust this URL
+      imageSrc: item.images,
+      imageAlt: item.name,
+      price: `$${item.price}`,
+      color: item.color,
+    })),
+  });
+
+  if (isLoading) return <div></div>;
+  if (error) return <div>An error occurred: {error.message}</div>;
 
   return (
     <div className="bg-white">

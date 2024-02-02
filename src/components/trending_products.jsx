@@ -1,25 +1,30 @@
-const trendingProducts = [
-    {
-      id: 1,
-      name: 'Leather Long Wallet',
-      color: 'Natural',
-      price: '$75',
-      href: '#',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-04-trending-product-02.jpg',
-      imageAlt: 'Hand stitched, orange leather long wallet.',
-    },
-    {
-        id: 2,
-        name: 'Leather Long Wallet',
-        color: 'Natural',
-        price: '$75',
-        href: '#',
-        imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-04-trending-product-02.jpg',
-        imageAlt: 'Hand stitched, orange leather long wallet.',
-      },
-  ]
+import { useState, useEffect } from 'react'
+import { API_URL } from '../api';
 
 export default function Trending() {
+
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        // Fetch data from your Django API endpoint here
+        fetch(API_URL + "/pillows/")
+        .then((response) => response.json())
+        .then((data) => {
+            // Format the data to match the desired format
+            const formattedProducts = data.map((item) => ({
+            id: item.id,
+            name: item.name,
+            href: `products/${item.slug}`, // You might need to adjust this URL
+            imageSrc: item.images,
+            imageAlt: item.name,
+            price: `$${item.price}`,
+            color: item.color,
+            }));
+            setProducts(formattedProducts);
+        })
+        .catch((error) => console.error('Error fetching data:', error));
+    }, []);
+    
     return (
         <section aria-labelledby="trending-heading" className="bg-[#e0e0e0]">
                 <div className="mt-32 rounded-lg mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:pt-32">
@@ -34,7 +39,7 @@ export default function Trending() {
                     </div>
 
                     <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-0 lg:gap-x-8">
-                    {trendingProducts.map((product) => (
+                    {products.map((product) => (
                         <div key={product.id} className="group relative">
                         <div className="h-56 w-full overflow-hidden rounded-md group-hover:opacity-75 lg:h-72 xl:h-80">
                             <img

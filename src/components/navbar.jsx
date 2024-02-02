@@ -557,7 +557,7 @@ export default function Navbar() {
                 </a>
 
                 {/* Account */}
-                <a href="#" className="p-2 text-gray-400 hover:text-gray-500 lg:ml-4">
+                <a href="/login" className="p-2 text-gray-400 hover:text-gray-500 lg:ml-4">
                   <span className="sr-only">Account</span>
                   <UserIcon className="h-6 w-6" aria-hidden="true" />
                 </a>

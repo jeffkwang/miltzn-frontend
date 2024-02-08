@@ -2,10 +2,11 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getDownloadURL, getStorage, ref } from "firebase/storage";
 import { getAuth } from "firebase/auth";
+import { GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBDNUMxTpp-7VMKshqwEK1M_QWvy3cTOyc",
-    authDomain: "miltzn-frontend.firebaseapp.com",
+    authDomain: "miltzn.com",
     projectId: "miltzn-frontend",
     storageBucket: "miltzn-frontend.appspot.com",
     messagingSenderId: "215909418723",
@@ -17,6 +18,7 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const storage = getStorage();
 const storageRef = ref(storage);
+export const provider = new GoogleAuthProvider();
 
 // const imagesRef = ref(storage, 'images');
 // const exampleRef = ref(storage, 'images/example.jpg')

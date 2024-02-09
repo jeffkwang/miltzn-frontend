@@ -17,8 +17,11 @@ import { Dialog, Popover, Tab, Transition } from '@headlessui/react'
 import { Bars3Icon, HeartIcon, ShoppingBagIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import logo from '../assets/img/logos/logo.svg';
 import { getCookie, setCookie } from './cookieutils'
-import { incrementQty, decrementQty } from '../components/add-to-cart'
+import { decrementQty } from '../components/add-to-cart'
 import { initiateCheckout } from './checkout'
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../config/firebase';
+
 const navigation = {
   categories: [
     {
@@ -82,31 +85,10 @@ const navigation = {
     },
   ],
   pages: [
-    { name: 'Company', href: '/' },
+    { name: 'Company', href: '/about' },
     { name: 'Custom Design', href: '/' },
   ],
 }
-
-const products = [
-  {
-    id: 1,
-    name: 'Throwback Hip Bag',
-    href: '#',
-    color: 'Salmon',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
-    imageAlt: 'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
-  },
-  {
-    id: 2,
-    name: 'Medium Stuff Satchel',
-    href: '#',
-    color: 'Blue',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
-    imageAlt:
-      'Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.',
-  },
-  // More products...
-]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -132,10 +114,9 @@ function removeFromCart(productData) {
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [openCart, setOpenCart] = useState(false)
-  // useEffect(() => {
-  //   console.log('open state has changed:', openCart);
-  // }, [openCart]);
+  const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
+  
   const [cartItemCount, setCartItemCount] = useState(() => {
     // Parse the cart data from the cookie
     const cartData = JSON.parse(getCookie('cart')) || [];
@@ -242,6 +223,21 @@ export default function Navbar() {
       console.error('Error initiating checkout:', error);
     } 
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in
+            setUser(user);
+        } else {
+            // No user is signed in
+            setUser(null);
+        }
+    });
+
+    // Clean up the listener on component unmount
+    return () => unsubscribe();
+  }, []);
 
   const checkoutButtonRef = useRef(null); // Create a ref for the checkout button
   return (
@@ -557,10 +553,17 @@ export default function Navbar() {
                 </a>
 
                 {/* Account */}
-                <a href="/login" className="p-2 text-gray-400 hover:text-gray-500 lg:ml-4">
-                  <span className="sr-only">Account</span>
-                  <UserIcon className="h-6 w-6" aria-hidden="true" />
+                {user ? (
+                <a href="/account" className="p-2 text-gray-400 hover:text-gray-500 lg:ml-4">
+                    <span className="sr-only">Account</span>
+                    <UserIcon className="h-6 w-6" aria-hidden="true" />
                 </a>
+                ) : (
+                <a href="/login" className="p-2 text-gray-400 hover:text-gray-500 lg:ml-4">
+                    <span className="sr-only">Login</span>
+                    <UserIcon className="h-6 w-6" aria-hidden="true" />
+                </a>
+                )}
 
                 {/* Cart */}
                                   

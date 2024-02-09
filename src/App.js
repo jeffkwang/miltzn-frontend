@@ -6,7 +6,8 @@ import { HomePage } from "./pages/Home"
 import ProductsPage from "./pages/Products"
 import ProductDetails from "./pages/Product-Detail"
 import { LoginPage } from "./pages/Login"
-import { SignupPage } from "./pages/Signup"
+import { AccountPage } from "./pages/Account"
+import { AboutPage } from "./pages/About"
 
 function App() {
 
@@ -23,7 +24,8 @@ function App() {
           <Route path="/products/:slug" element={<ProductDetails />}/>
           <Route path="/collections/:collection/*" element={<ProductsPage />} />
           <Route path="/login" element={<LoginPage />}/>
-          <Route path="/signup" element={<SignupPage />}/>
+          <Route path="/account" element={<AccountPage />}/>
+          <Route path="/about" element={<AboutPage />}/>
         </Routes>
 
         {window.location.pathname !== '/login' && window.location.pathname !== '/signup' && (

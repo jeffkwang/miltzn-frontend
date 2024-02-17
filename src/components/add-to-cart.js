@@ -14,7 +14,7 @@ export function addToCart(productData) {
 export function notInCart(productData) {
     let cart = JSON.parse(getCookie('cart')) || [];
     return !cart.some(item => 
-        item.slug === productData.slug &&
+        item.name === productData.name &&
         item.price === productData.price);
         // Add other product identifiers here
     }
@@ -22,7 +22,6 @@ export function notInCart(productData) {
 // Function to increment the quantity of a product in the cart
 export function incrementQty(productData) {
     let cart = JSON.parse(getCookie('cart')) || [];
-    console.log((productData));
     let productFound = false;
 
     cart = cart.map(item => {
@@ -77,23 +76,22 @@ export function decrementQty(productData) {
 }
 
 
-export function handleAddToCart(product, slug, selectedColor) {
-    return () => {  
-      const productData = {
-        slug: slug,
+export function handleAddToCart(product, selectedVariant) {
+    
+    const productData = {
         name: product.name,
-        images: product.images[0].src,
-        price: product.price,
-        color: selectedColor['name'],
+        href: product.href,
+        images: selectedVariant.image_urls[0],
+        price: (selectedVariant.price.amount / 100).toFixed(2),
+        variation: selectedVariant.name,
         qty: 1,
-      };
-  
-      if (notInCart(productData)) {
+    };
+    console.log(productData);
+    if (notInCart(productData)) {
         addToCart(productData);
         console.log('Product added to cart!');
-      } else {
+    } else {
         incrementQty(productData);
         console.log('Product quantity incremented in cart!');
-      }
-    };
+    }
   }

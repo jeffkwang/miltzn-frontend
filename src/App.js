@@ -4,10 +4,11 @@ import Navbar from "./components/navbar"
 import Footer from "./components/footer"
 import { HomePage } from "./pages/Home"
 import ProductsPage from "./pages/Products"
-import ProductDetails from "./pages/Product-Detail"
+import ProductDetailPage from "./pages/Product-Detail"
 import { LoginPage } from "./pages/Login"
 import { AccountPage } from "./pages/Account"
 import { AboutPage } from "./pages/About"
+import { ContactPage } from "./pages/Contact"
 
 function App() {
 
@@ -21,11 +22,12 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />}/>
           <Route path="/products" element={<ProductsPage />}/>
-          <Route path="/products/:slug" element={<ProductDetails />}/>
-          <Route path="/collections/:collection/*" element={<ProductsPage />} />
+          <Route path="/products/:category/:name" element={<ProductDetailPage />}/>
+          <Route path="/products/:category/" element={<ProductsPage />} />
           <Route path="/login" element={<LoginPage />}/>
           <Route path="/account" element={<AccountPage />}/>
           <Route path="/about" element={<AboutPage />}/>
+          <Route path="/contact" element={<ContactPage />}/>
         </Routes>
 
         {window.location.pathname !== '/login' && window.location.pathname !== '/signup' && (

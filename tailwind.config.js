@@ -30,6 +30,9 @@ module.exports = {
         transparent: 'transparent',
         beige: '#fffaf2',
       },
+      gridTemplateRows: {
+        '[auto,auto,1fr]': 'auto auto 1fr',
+      },
     },
   },
   plugins: [

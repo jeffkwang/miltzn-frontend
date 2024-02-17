@@ -1,6 +1,5 @@
-import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { PRODUCTS_API_URL, API_URL } from '../api'; // Import the API_URL constant
+import React, { useState, useEffect } from 'react';
+import {PRODUCTS_API_URL} from '../api';
 
 // const products = [
 //   {
@@ -15,37 +14,24 @@ import { PRODUCTS_API_URL, API_URL } from '../api'; // Import the API_URL consta
 //   // More products...
 // ]
 
-const fetchProducts = async ({ queryKey }) => {
-  const [_key, { apiURL }] = queryKey;
-  const response = await fetch(apiURL);
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  return response.json();
-};
-
 export default function ProductsPage() {
-  const { collection } = useParams(); // Get the collection parameter from the URL
+  const [products, setProducts] = useState([]);
 
-  const apiURL = collection ? `${API_URL}?collection=${collection}` : PRODUCTS_API_URL;
-
-  const { data: products, isLoading, error } = useQuery({
-    queryKey: ['products', { apiURL }],
-    queryFn: fetchProducts,
-    // Optional: Convert the fetched data in the desired format here using select
-    select: (data) => data.map((item) => ({
-      id: item.id,
-      name: item.name,
-      href: `products/${item.slug}`, // You might need to adjust this URL
-      imageSrc: item.images,
-      imageAlt: item.name,
-      price: `$${item.price}`,
-      color: item.color,
-    })),
-  });
-
-  if (isLoading) return <div></div>;
-  if (error) return <div>An error occurred: {error.message}</div>;
+  useEffect(() => {
+    fetch(`${PRODUCTS_API_URL}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      setProducts(data.items)
+    })
+    .catch(error => {
+      console.error('There was a problem fetching the products:', error);
+    });
+  }, []);
 
   return (
     <div className="bg-white">
@@ -57,22 +43,21 @@ export default function ProductsPage() {
             <div key={product.id} className="group relative">
               <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
                 <img
-                  src={product.imageSrc}
-                  alt={product.imageAlt}
+                  src={product.src}
+                  alt={product.alt}
                   className="h-full w-full object-cover object-center lg:h-full lg:w-full"
                 />
               </div>
-              <div className="mt-4 flex justify-between">
+              <div className="mt-4">
                 <div>
                   <h3 className="text-sm text-gray-700">
-                    <a href={product.href}>
+                  <a href={`/products/${product.href}`}>
                       <span aria-hidden="true" className="absolute inset-0" />
                       {product.name}
                     </a>
                   </h3>
-                  <p className="mt-1 text-sm text-gray-500">{product.color}</p>
                 </div>
-                <p className="text-sm font-medium text-gray-900">{product.price}</p>
+                <p className="mt-1 text-sm font-medium text-gray-900">{product.price}</p>
               </div>
             </div>
           ))}

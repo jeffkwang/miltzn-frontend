@@ -95,7 +95,7 @@ function classNames(...classes) {
 }
 
 function removeFromCart(productData) {
-  console.log('Removing from cart:', productData);
+  console.log('removing from cart', productData);
 
   if (productData.qty > 1) {
     decrementQty(productData);
@@ -104,7 +104,7 @@ function removeFromCart(productData) {
 
   let cart = JSON.parse(getCookie('cart')) || [];
   cart = cart.filter(item => 
-      !(item.slug === productData.id));
+      !(item.name === productData.id));
   setCookie('cart', JSON.stringify(cart), 7);
 
   window.dispatchEvent(new Event('cartUpdated'));
@@ -153,10 +153,10 @@ export default function Navbar() {
 
     // Reformat the cart data into the desired format
     const formattedProducts = cartData.map((cartItem) => ({
-      id: cartItem.slug, // You can use 'slug' as the id or generate a unique id if needed
+      id: cartItem.name,
       name: cartItem.name,
-      href: `/products/${cartItem.slug}`, // You can set the href as needed
-      color: cartItem.color, // You can set the color as needed
+      href: `/products/${cartItem.href}`,
+      variant: cartItem.variation,
       imageSrc: cartItem.images,
       imageAlt: cartItem.name,
       qty: cartItem.qty,
@@ -569,7 +569,6 @@ export default function Navbar() {
                                   
                     <button 
                       onClick={() => {
-                        console.log('Button clicked'); // Add this for debugging
                         setOpenCart(!openCart);
                       }}
                       className="ml-4 group -m-2 flex items-center p-2"
@@ -646,7 +645,7 @@ export default function Navbar() {
                                               <div>
                                                 <div className="flex justify-between text-base font-medium text-gray-900">
                                                   <h3>
-                                                    <a href={product.href}>{product.name}</a>
+                                                    <a href={product.href}>{product.name} ({product.variant})</a>
                                                   </h3>
                                                   <p className="ml-4">{product.price}</p>
                                                 </div>
@@ -700,7 +699,6 @@ export default function Navbar() {
                                         type="button"
                                         className="font-medium text-indigo-600 hover:text-indigo-500"
                                         onClick={() => {
-                                          console.log('Continue button clicked'); // Add this for debugging
                                           setOpenCart(false);
                                         }}
                                       >

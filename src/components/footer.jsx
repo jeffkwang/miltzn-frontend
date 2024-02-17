@@ -15,7 +15,7 @@ const footerNavigation = {
       { name: 'Privacy', href: '#' },
     ],
     customerService: [
-      { name: 'Contact', href: '#' },
+      { name: 'Contact', href: '/contact' },
       { name: 'Shipping', href: '#' },
       { name: 'Returns', href: '#' },
       { name: 'Warranty', href: '#' },

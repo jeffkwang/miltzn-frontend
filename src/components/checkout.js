@@ -5,6 +5,7 @@ async function initiateCheckout(event) {
     event.preventDefault();
     
     try {
+      console.log('initiating checkout.')
       const cart = getCookie('cart');
   
       // Replace `API_URL` with the actual API URL of your Django backend

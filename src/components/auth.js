@@ -12,6 +12,27 @@ const actionCodeSettings = {
     handleCodeInApp: true
   };
 
+async function customerExists(email) {
+  try {
+      const response = await fetch('http://127.0.0.1:8000/check-customer', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: email })
+      });
+
+      if (response.ok) {
+          const data = await response.json();
+          if (data.exists == 'false') { return false } else { return true };
+      } else {
+          throw new Error(`Request failed with status ${response.status}: ${response.statusText}`);
+      }
+  } catch (error) {
+      throw error;
+  }
+}
+
 export function Login() {
     const [email, setEmail] = useState("");
     const [showBanner, setShowBanner] = useState(false);
@@ -32,20 +53,54 @@ export function Login() {
     }, []);
 
     const signIn = async () => {
+        /*
+        Function signs in user using a sign in link that is accessed via their email. If the customer already exists, then the user creation
+        process is skipped. Otherwise, a user is created using Firebase auth's email and password function. Then, the user account creation
+        endpoint of the API is queried.
+        */
+
         await sendSignInLinkToEmail(auth, email, actionCodeSettings)
           .then(() => {
+            return customerExists(email); // Check if customer exists
+          })
+          .then((exists) => {
             try {
-              const userCredential = createUserWithEmailAndPassword(
-                auth,
-                email,
-                Math.random().toString(36).substr(2, 8),
-                actionCodeSettings
-              );
-      
-              console.log('Successfully created new user:', userCredential.user.uid);
-            } catch (error){
-              console.error(error);
-            }
+              if (!exists) {
+
+                const userCredential = createUserWithEmailAndPassword(
+                  auth,
+                  email,
+                  Math.random().toString(36).substr(2, 8),
+                  actionCodeSettings
+                );
+        
+                console.log('Successfully created new user:', userCredential.user.uid);
+                  
+                // const response = fetch(`${CUSTOMER_API_URL}`, {
+                const response = fetch(`http://127.0.0.1:8000/new-customer/`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    email: email,
+                    uid: userCredential.user.uid,
+                  }),
+                }
+                );
+
+                if (response.ok) {
+                  console.log('User data sent to the backend successfully.');
+                } else {
+                  console.error('Failed to send user data to the backend.');
+                }
+
+              }
+                
+              } catch (error) {
+                console.error("Error creating user:", error);
+              }
+          
                 
           window.localStorage.setItem('emailForSignIn', email);
           setShowBanner(true);
@@ -53,25 +108,56 @@ export function Login() {
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
+            if(errorCode == 'ERROR_EMAIL_ALREADY_IN_USE') {
+              console.log("DUPLICATE EMAIL ERROR", errorMessage);
+            } else {
+              console.log(errorMessage)
+            }
           });
     };
 
     const googleSignIn = async () => {
-      await signInWithPopup(auth, provider)
-      .then((result) => {
+      /*
+      Function provides login access via Google authentication. It first checks whether the user already exists in Square via email.
+      If the user is new and doesn't exist, then it sends a post request with the user's email and authentication ID to the backend's new-customer
+      endpoint. If the operation is successful, the user is redirected to the home page.
+      */
+
+      try {
+        const result = await signInWithPopup(auth, provider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
         const user = result.user;
-        console.log(user);
-        window.location.href="/"
-      }).catch((error) => {
+
+        const exists = await customerExists(user.email);
+
+          if (!exists) {
+            const response = await fetch(`http://127.0.0.1:8000/new-customer`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      email: user.email,
+                      uid: user.uid,
+                    }),
+                  }
+                  );
+
+            if (response.ok) {
+                console.log('User data sent to the backend successfully.');
+            }
+          }
+
+        window.location.href = '/';
+        
+      }catch(error) {
         // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
-        const email = error.customData.email;
+        // const email = error.customData.email;
         const credential = GoogleAuthProvider.credentialFromError(error);
-      });
+      }
     
     };
 
